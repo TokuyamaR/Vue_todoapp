@@ -35,35 +35,33 @@ const app = new Vue({
     },
     methods: {
         // 使用する処理
-        methods: {
-            doAdd: function (event, value) {
-                // 入力されたtodoの入力値を取得
-                var content = this.$refs.content;
+        doAdd: function (event, value) {
+            // 入力されたtodoの入力値を取得
+            var content = this.$refs.content;
 
-                // 入力値がなければ、何もしないでreturn
-                if (!content.value.length) {
-                    return
-                }
-
-                // [新しいID、content、状態]
-                // というオブジェクトをtodosリストへpush
-                // 作業状態(state)は、デフォルトで「作業中(=0)」にて作成
-                this.todos.push({
-                    id: todoStorage.uid++,
-                    content: content.value,
-                    state: 0
-                });
-
-                content.value = ''
-            },
-
-            doChangeState: function (todo) {
-                todo.state = todo.state ? 0 : 1
-            },
-            doRemove: function (todo) {
-                var index = this.todos.indexOf(todo);
-                this.todos.splice(index, 1)
+            // 入力値がなければ、何もしないでreturn
+            if (!content.value.length) {
+                return
             }
+
+            // [新しいID、content、状態]
+            // というオブジェクトをtodosリストへpush
+            // 作業状態(state)は、デフォルトで「作業中(=0)」にて作成
+            this.todos.push({
+                id: todoStorage.uid++,
+                content: content.value,
+                state: 0
+            });
+
+            content.value = ''
+        },
+
+        doChangeState: function (todo) {
+            todo.state = todo.state ? 0 : 1
+        },
+        doRemove: function (todo) {
+            var index = this.todos.indexOf(todo);
+            this.todos.splice(index, 1)
         }
     },
     computed: {

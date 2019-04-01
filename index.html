@@ -9,7 +9,7 @@
     <!--Todoの新規作成-->
     <section id="todo-create">
         <h2 class="create-title">Todo 新規作成</h2>
-        <form action="" class="add-todo" v-on:submit.prevent="doAdd">
+        <form class="add-form" v-on:submit.prevent="doAdd">
             <!--Todo入力欄-->
             Todo<br>
             <input type="text" refs="content">
@@ -20,10 +20,15 @@
     </section>
 
     <!--絞り込みボタン-->
-    <section id="buttons"></section>
+    <section id="buttons">
+        <label v-for="option in options">
+            <input type="radio" v-model="current" v-bind:value="option.value">{{ option.label }}
+        </label>
+    </section>
 
     <!--Todoリスト-->
     <section id="todo-list">
+        <p v-show=" current != -1" class="todo-count">該当するTodoが{{ computedTodos.length }}件見つかりました</p>
         <table>
             <thead>
             <tr>
@@ -35,24 +40,26 @@
             </thead>
             <tbody>
             <!--toddリストをforで出す-->
-            <tr v-for="todo in todos" v-bind:key="todo.id">
+            <tr v-for="todo in computedTodos" v-bind:key="todo.id" v-bind:class="{done:todo.state}">
                 <!--各todoの内容-->
                 <th>{{ todo.id }}</th>
                 <td>{{ todo.content }}</td>
                 <td>
                     <!--状態変更ボタンのモック-->
-                    <button>{{ todo.state }}</button>
+                    <button v-on:click="doChangeState(todo)">
+                        {{ labels[todo.state] }}
+                    </button>
                 </td>
                 <td>
                     <!--削除ボタンのモック-->
-                    <button>削除</button>
+                    <button v-on:click="doRemove(todo)">削除</button>
                 </td>
             </tr>
             </tbody>
         </table>
     </section>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="app.js"></script>
 <body>
 </body>

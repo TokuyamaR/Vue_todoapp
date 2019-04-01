@@ -22,11 +22,21 @@ const app = new Vue({
     data: {
         // 使用するデータ
         todos: [],
+
+        // todo絞り込み用の選択肢を追加
+        options: [
+            {value: -1, label: "すべて"},
+            {value: 0, label: "作業中"},
+            {value: 1, label: "作業済み"},
+        ],
+        // 洗濯しているoptionsのvalueを記憶するためのデータ
+        // 初期値は「すべて」とする
+        current: -1
     },
     methods: {
         // 使用する処理
         methods: {
-            doAdd: function (e, value) {
+            doAdd: function (event, value) {
                 // 入力されたtodoの入力値を取得
                 var content = this.$refs.content;
 
@@ -40,20 +50,36 @@ const app = new Vue({
                 // 作業状態(state)は、デフォルトで「作業中(=0)」にて作成
                 this.todos.push({
                     id: todoStorage.uid++,
-                    content: comment.value,
+                    content: content.value,
                     state: 0
                 });
 
-                comment.value = ''
+                content.value = ''
             },
 
-            doChangeState: function (item) {
-                item.state = item.state ? 0 : 1
+            doChangeState: function (todo) {
+                todo.state = todo.state ? 0 : 1
             },
-            doRemove: function (item) {
-                var index = this.todos.indexOf(item);
+            doRemove: function (todo) {
+                var index = this.todos.indexOf(todo);
                 this.todos.splice(index, 1)
             }
+        }
+    },
+    computed: {
+        computedTodos: function () {
+            // currentが-1なら全てそれ以外なら、currentとstateが一致するものだけ表示する
+            return this.todos.filter(function (el) {
+                return this.current < 0 ? true : this.current === el.state
+            }, this)
+        },
+        //  作業中・完了のラベルを作成する
+        labels() {
+            return this.options.reduce(function (a, b) {
+                return Object.assign(a, {[b.value]: b.label})
+            }, {})
+            // キーから見つけやすいように、次のように加工データを作成
+            // {0: '作業中', 1: '作業済み', -1: 'すべて'}
         }
     },
     // 監視により、指定したeventが行われた際に行いたい処理を自動で行うようにする
@@ -69,5 +95,10 @@ const app = new Vue({
             // deepオプションでネストしているデータも監視できる
             deep: true
         }
+    },
+
+    created() {
+        // インスタンス作成時に自動的にfetchする
+        this.todos = todoStorage.fetch();
     }
 });
